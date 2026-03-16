@@ -7,7 +7,27 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification, pipelin
 # -----------------------
 # Load the model
 # -----------------------
-model_name_or_path = "product_ner_model_distilbert_2"
+hf_repo_id = "MaksICK1287/Product_NLP"
+model_subfolder = "product_ner_model_distilbert_2"
+model_path = f"{hf_repo_id}/{model_subfolder}"
+
+@st.cache_resource(show_spinner=True)
+def load_model():
+    with st.spinner("Load tokenizer"):
+        tokenizer = AutoTokenizer.from_pretrained(model_path)
+    
+    with st.spinner("Loading DistilBERT v2."):
+        model = AutoModelForTokenClassification.from_pretrained(model_path)
+
+    ner_pipe = pipeline(
+        "ner",
+        model=model,
+        tokenizer=tokenizer,
+        aggregation_strategy="simple" 
+    )
+    return ner_pipe
+
+ner_pipeline = load_model()
 
 
 @st.cache_resource(show_spinner=True)
