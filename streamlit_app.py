@@ -16,14 +16,14 @@ def load_model():
         with st.spinner("Tokenizer load..."):
             tokenizer = AutoTokenizer.from_pretrained(
                 hf_repo_id,
-                subfolder=model_subfolder,  # ВАЖНО: указываем подпапку
+                subfolder=model_subfolder,
                 use_fast=True
             )
         
         with st.spinner("Model load..."):
             model = AutoModelForTokenClassification.from_pretrained(
                 hf_repo_id,
-                subfolder=model_subfolder  # ВАЖНО: указываем подпапку
+                subfolder=model_subfolder  
             )
 
         ner_pipe = pipeline(
@@ -36,15 +36,13 @@ def load_model():
         
     except Exception as e:
         st.error(f"Erorr model: {str(e)}")
-        # Показываем подробности для отладки
         with st.expander("Details"):
             st.code(str(e))
         return None
 
-# Загружаем модель при запуске
+
 ner_pipeline = load_model()
 
-# Если модель не загрузилась, показываем сообщение и останавливаемся
 if ner_pipeline is None:
     st.error("Not able to load the module")
     st.stop()
