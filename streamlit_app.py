@@ -8,26 +8,46 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification, pipelin
 # Load the model
 # -----------------------
 hf_repo_id = "MaksICK1287/Product_NLP"
-model_subfolder = "product_ner_model_distilbert_2"
-model_path = f"{hf_repo_id}/{model_subfolder}"
+model_subfolder = "product_ner_model_distilbert_4"
 
 @st.cache_resource(show_spinner=True)
 def load_model():
-    with st.spinner("Load tokenizer"):
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-    
-    with st.spinner("Loading DistilBERT v2."):
-        model = AutoModelForTokenClassification.from_pretrained(model_path)
+    try:
+        with st.spinner("Tokenizer load..."):
+            tokenizer = AutoTokenizer.from_pretrained(
+                hf_repo_id,
+                subfolder=model_subfolder,  # ВАЖНО: указываем подпапку
+                use_fast=True
+            )
+        
+        with st.spinner("Model load..."):
+            model = AutoModelForTokenClassification.from_pretrained(
+                hf_repo_id,
+                subfolder=model_subfolder  # ВАЖНО: указываем подпапку
+            )
 
-    ner_pipe = pipeline(
-        "ner",
-        model=model,
-        tokenizer=tokenizer,
-        aggregation_strategy="simple" 
-    )
-    return ner_pipe
+        ner_pipe = pipeline(
+            "ner",
+            model=model,
+            tokenizer=tokenizer,
+            aggregation_strategy="simple"
+        )
+        return ner_pipe
+        
+    except Exception as e:
+        st.error(f"Erorr model: {str(e)}")
+        # Показываем подробности для отладки
+        with st.expander("Details"):
+            st.code(str(e))
+        return None
 
+# Загружаем модель при запуске
 ner_pipeline = load_model()
+
+# Если модель не загрузилась, показываем сообщение и останавливаемся
+if ner_pipeline is None:
+    st.error("Not able to load the module")
+    st.stop()
 
 
 @st.cache_resource(show_spinner=True)
