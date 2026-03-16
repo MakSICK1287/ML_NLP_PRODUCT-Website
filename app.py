@@ -7,7 +7,7 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification, pipelin
 # -----------------------
 # Load the model
 # -----------------------
-model_name_or_path = "product_ner_model_distilbert_4"
+model_name_or_path = "product_ner_model_distilbert_2"
 
 
 @st.cache_resource(show_spinner=True)
